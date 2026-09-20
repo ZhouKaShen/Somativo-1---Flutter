@@ -6,8 +6,17 @@ import 'providers/favorites_provider.dart';
 import 'providers/consumed_provider.dart';
 import 'screens/login_screen.dart';
 import 'screens/catalog_screen.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Inicialização da nuvem Supabase
+  await Supabase.initialize(
+    url: 'https://eujpdeqbgwvydagrvooo.supabase.co',
+    publishableKey: 'sb_publishable_bT9w9VzSLUeQ4d0yP9WVdg_Uz8_xSEd',
+  );
+
   runApp(const AppRoot());
 }
 
@@ -60,6 +69,8 @@ class _AuthGate extends StatefulWidget {
 }
 
 class _AuthGateState extends State<_AuthGate> {
+  String? _lastLoadedUser;
+
   @override
   void initState() {
     super.initState();
@@ -69,10 +80,6 @@ class _AuthGateState extends State<_AuthGate> {
   Future<void> _restore() async {
     final auth = context.read<AuthProvider>();
     await auth.restoreSession();
-    if (auth.isLoggedIn) {
-      await context.read<FavoritesProvider>().loadForUser(auth.currentUser!);
-      await context.read<ConsumedProvider>().loadForUser(auth.currentUser!);
-    }
   }
 
   @override
@@ -84,6 +91,24 @@ class _AuthGateState extends State<_AuthGate> {
             body: Center(child: CircularProgressIndicator()),
           );
         }
+
+        // Se o usuário está logado e mudou desde a última carga (ex: acabou de logar)
+        if (auth.isLoggedIn && auth.currentUser != null) {
+          final currentUser = auth.currentUser!;
+          if (_lastLoadedUser != currentUser) {
+            _lastLoadedUser = currentUser;
+            // Executa o carregamento das listas em segundo plano
+            Future.microtask(() async {
+              if (context.mounted) {
+                await context.read<FavoritesProvider>().loadForUser(currentUser);
+                await context.read<ConsumedProvider>().loadForUser(currentUser);
+              }
+            });
+          }
+        } else {
+          _lastLoadedUser = null;
+        }
+
         return auth.isLoggedIn ? const CatalogScreen() : const LoginScreen();
       },
     );
