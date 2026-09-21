@@ -70,7 +70,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 TextField(
                   controller: _userController,
                   decoration: const InputDecoration(
-                    labelText: 'Usuário',
+                    labelText: 'Email',
                     border: OutlineInputBorder(),
                   ),
                 ),
@@ -78,7 +78,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 TextField(
                   controller: _passController,
                   decoration: const InputDecoration(
-                    labelText: 'Senha (mín. 4 caracteres)',
+                    labelText: 'Senha (mín. 6 caracteres)',
                     border: OutlineInputBorder(),
                   ),
                   obscureText: true,

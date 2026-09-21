@@ -8,13 +8,27 @@ import 'screens/login_screen.dart';
 import 'screens/catalog_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+// As credenciais do Supabase não ficam mais escritas aqui: elas vêm de
+// variáveis passadas na hora de rodar/compilar o app (--dart-define),
+// veja o README para o comando completo ou o .vscode/launch.json para
+// rodar direto pelo VS Code.
+const _supabaseUrl = String.fromEnvironment('SUPABASE_URL');
+const _supabaseKey = String.fromEnvironment('SUPABASE_KEY');
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  assert(
+    _supabaseUrl.isNotEmpty && _supabaseKey.isNotEmpty,
+    'SUPABASE_URL e SUPABASE_KEY não foram definidos. '
+    'Rode com --dart-define=SUPABASE_URL=... --dart-define=SUPABASE_KEY=... '
+    'ou use a configuração pronta em .vscode/launch.json.',
+  );
+
   // Inicialização da nuvem Supabase
   await Supabase.initialize(
-    url: 'https://eujpdeqbgwvydagrvooo.supabase.co',
-    publishableKey: 'sb_publishable_bT9w9VzSLUeQ4d0yP9WVdg_Uz8_xSEd',
+    url: _supabaseUrl,
+    publishableKey: _supabaseKey,
   );
 
   runApp(const AppRoot());

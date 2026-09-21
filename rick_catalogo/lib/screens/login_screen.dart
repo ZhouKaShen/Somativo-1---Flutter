@@ -80,7 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 TextField(
                   controller: _userController,
                   decoration: const InputDecoration(
-                    labelText: 'Usuário',
+                    labelText: 'Email',
                     border: OutlineInputBorder(),
                   ),
                   textInputAction: TextInputAction.next,
